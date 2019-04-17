@@ -1,24 +1,28 @@
 {
-  "name": "Patient",
-  "plural": "patients",
-  "base": "PersistedModel",
+  "name": "MeasuredData",
+  "base": "Model",
   "idInjection": true,
   "options": {
     "validateUpsert": true
   },
   "properties": {
-    "patid": {
+    "timestamp": {
+      "type": "date",
+      "required": true
+    },
+    "sensor": {
       "type": "string",
       "required": true
     },
-    "name": {
+    "value": {
+      "type": "string",
+      "required": true
+    },
+    "measurement": {
       "type": "string"
     },
-    "lastname": {
+    "unit": {
       "type": "string"
-    },
-    "birthdate": {
-      "type": "date"
     }
   },
   "validations": [],

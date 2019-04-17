@@ -38,5 +38,21 @@
   "Patient": {
     "dataSource": "mongoDB",
     "public": true
+  },
+  "MeasuredData": {
+    "dataSource": null,
+    "public": false
+  },
+  "Reading": {
+    "dataSource": null,
+    "public": false
+  },
+  "SensorInstance": {
+    "dataSource": "mongoDB",
+    "public": true
+  },
+  "LinkedSensor": {
+    "dataSource": null,
+    "public": false
   }
 }

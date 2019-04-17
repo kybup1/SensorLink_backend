@@ -1,24 +1,21 @@
 {
-  "name": "Patient",
-  "plural": "patients",
-  "base": "PersistedModel",
+  "name": "Reading",
+  "base": "Model",
   "idInjection": true,
   "options": {
     "validateUpsert": true
   },
   "properties": {
-    "patid": {
+    "sensorType": {
       "type": "string",
       "required": true
     },
-    "name": {
-      "type": "string"
+    "measurement": {
+      "type": "string",
+      "required": true
     },
-    "lastname": {
+    "unit": {
       "type": "string"
-    },
-    "birthdate": {
-      "type": "date"
     }
   },
   "validations": [],

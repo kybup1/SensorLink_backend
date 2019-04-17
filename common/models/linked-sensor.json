@@ -1,24 +1,36 @@
 {
-  "name": "Patient",
-  "plural": "patients",
-  "base": "PersistedModel",
+  "name": "LinkedSensor",
+  "base": "Model",
   "idInjection": true,
   "options": {
     "validateUpsert": true
   },
   "properties": {
-    "patid": {
+    "altPatIdentifier": {
+      "type": "string"
+    },
+    "sensor": {
       "type": "string",
       "required": true
     },
-    "name": {
-      "type": "string"
+    "from": {
+      "type": "date",
+      "required": true
     },
-    "lastname": {
-      "type": "string"
-    },
-    "birthdate": {
+    "to": {
       "type": "date"
+    },
+    "isConnected": {
+      "type": "boolean",
+      "default": true
+    },
+    "dataAccess": {
+      "type": "any"
+    },
+    "savedData": {
+      "type": [
+        "MeasuredData"
+      ]
     }
   },
   "validations": [],

@@ -1,24 +1,30 @@
 {
-  "name": "Patient",
-  "plural": "patients",
+  "name": "SensorInstance",
+  "plural": "sensors",
   "base": "PersistedModel",
   "idInjection": true,
   "options": {
     "validateUpsert": true
   },
   "properties": {
-    "patid": {
+    "sensorIdentifier": {
+      "type": "string"
+    },
+    "sensorType": {
       "type": "string",
       "required": true
     },
-    "name": {
-      "type": "string"
+    "sensorId": {
+      "type": "string",
+      "required": true
     },
-    "lastname": {
-      "type": "string"
+    "readings": {
+      "type": [
+        "Reading"
+      ]
     },
-    "birthdate": {
-      "type": "date"
+    "linkedPatId": {
+      "type": "string"
     }
   },
   "validations": [],
