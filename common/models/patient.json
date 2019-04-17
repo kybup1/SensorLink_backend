@@ -2,16 +2,18 @@
   "name": "Patient",
   "plural": "patients",
   "base": "PersistedModel",
-  "idInjection": true,
+  "idInjection": false,
   "options": {
     "validateUpsert": true
   },
   "properties": {
-    "patid": {
+    "patId": {
       "type": "string",
+      "id": "true",
+      "primary":"true",
       "required": true
     },
-    "name": {
+    "firstname": {
       "type": "string"
     },
     "lastname": {
@@ -19,6 +21,12 @@
     },
     "birthdate": {
       "type": "date"
+    },
+    "linkedSensors": {
+      "type":[
+        "LinkedSensor"
+      ],
+      "default":[]
     }
   },
   "validations": [],

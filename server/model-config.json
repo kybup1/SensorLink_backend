@@ -17,7 +17,7 @@
     "dataSource": "mongoDB"
   },
   "AccessToken": {
-    "dataSource": "db",
+    "dataSource": "mongoDB",
     "public": false
   },
   "ACL": {

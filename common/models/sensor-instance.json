@@ -2,13 +2,15 @@
   "name": "SensorInstance",
   "plural": "sensors",
   "base": "PersistedModel",
-  "idInjection": true,
+  "idInjection": false,
   "options": {
     "validateUpsert": true
   },
   "properties": {
     "sensorIdentifier": {
-      "type": "string"
+      "type": "string",
+      "id":true,
+      "primary":true
     },
     "sensorType": {
       "type": "string",
