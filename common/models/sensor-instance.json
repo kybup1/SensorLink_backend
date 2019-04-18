@@ -16,6 +16,9 @@
       "type": "string",
       "required": true
     },
+    "manufacturer": {
+      "type": "string"
+    },
     "sensorId": {
       "type": "string",
       "required": true

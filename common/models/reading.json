@@ -10,9 +10,12 @@
       "type": "string",
       "required": true
     },
-    "measurement": {
+    "measurementString": {
       "type": "string",
       "required": true
+    },
+    "measurementCode": {
+      "type": "string"
     },
     "unit": {
       "type": "string"

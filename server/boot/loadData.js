@@ -9,27 +9,30 @@ module.exports = function(app, cb) {
    * for more info.
    */
   Promise.all([app.models.Patient.destroyAll(), app.models.SensorInstance.destroyAll()]).then((res) => {
-    let readingDerG = new app.models.Reading({
-      "sensorType":"DerGerät",
-      "measurement":"Schwitzt",
-      "Unit":"Nie?"
+    let readingPulse = new app.models.Reading({
+      "sensorType":"Everion",
+      "measurementString":"Puls",
+      "measurementCode":"8867-4",
+      "Unit":"/min"
     });
-    let readingDerG2 = new app.models.Reading({
-      "sensorType":"DerGerät",
-      "measurement":"Müde",
-      "Unit":"Nie?"
+    let readingSaturation = new app.models.Reading({
+      "sensorType":"everion",
+      "measurementString":"Sauerstoffsättigung",
+      "measurementCode":"20564-1",
+      "Unit":"%"
     });
-    let derGeraet = app.models.SensorInstance.create({
-      "sensorIdentifier":"DerGerätMessgerät-1",
-      "sensorType":"DerGerätMessgerät",
+    let sensor = app.models.SensorInstance.create({
+      "sensorIdentifier":"everion-1",
+      "sensorType":"everion",
       "sensorId":"1",
+      "manufacturer":"Biovotion",
       "readings":[
-        readingDerG,
-        readingDerG2
+        readingPulse,
+        readingSaturation
       ]
     });
 
-    let misterTest = app.models.Patient.create({
+    app.models.Patient.create({
       "patId":"12",
       "firstname":"Julio",
       "lastname":"Testo",
@@ -37,7 +40,7 @@ module.exports = function(app, cb) {
     }).then(misterTest => {
       let misterTestLinkedGeraet = new app.models.LinkedSensor({
         "altPatIdentifier": "1234",
-        "sensor": derGeraet.sensorIdentifier,
+        "sensor": sensor.sensorIdentifier,
         "from": "2019-04-15T08:00Z",
         "isConnected": true,
         "dataAccess": {},
@@ -46,7 +49,7 @@ module.exports = function(app, cb) {
       return misterTest
     }).then(misterTest =>{
       misterTest.save()
-      app.models.SensorInstance.findById("DerGerätMessgerät-1").then(sensor => {
+      app.models.SensorInstance.findById("everion-1").then(sensor => {
         sensor.linkedPatId=misterTest.patId;
         sensor.save()
       })
