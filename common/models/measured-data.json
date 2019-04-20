@@ -18,7 +18,10 @@
       "type": "string",
       "required": true
     },
-    "measurement": {
+    "measurementString": {
+      "type": "string"
+    },
+    "measurementCode": {
       "type": "string"
     },
     "unit": {

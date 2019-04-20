@@ -1,0 +1,34 @@
+{
+  "name": "Event",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "eventName": {
+      "type": "string",
+      "required": true
+    },
+    "eventCode": {
+      "type": "string"
+    },
+    "from": {
+      "type": "date",
+      "required": true
+    },
+    "to": {
+      "type": "date"
+    },
+    "readings": {
+      "type": [
+        "Reading"
+      ],
+      "default": []
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

@@ -9,8 +9,8 @@
   "properties": {
     "sensorIdentifier": {
       "type": "string",
-      "id":true,
-      "primary":true
+      "id": true,
+      "primary": true
     },
     "sensorType": {
       "type": "string",

@@ -54,5 +54,9 @@
   "LinkedSensor": {
     "dataSource": null,
     "public": false
+  },
+  "Event": {
+    "dataSource": "mongoDB",
+    "public": false
   }
 }

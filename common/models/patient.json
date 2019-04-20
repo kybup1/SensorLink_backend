@@ -10,8 +10,8 @@
     "patId": {
       "type": "string",
       "id": "true",
-      "primary":"true",
-      "required": true
+      "required": true,
+      "primary": "true"
     },
     "firstname": {
       "type": "string"
@@ -23,14 +23,24 @@
       "type": "date"
     },
     "linkedSensors": {
-      "type":[
+      "type": [
         "LinkedSensor"
       ],
-      "default":[]
+      "default": []
     }
   },
   "validations": [],
-  "relations": {},
+  "relations": {
+    "events": {
+      "type": "hasMany",
+      "model": "Event",
+      "foreignKey": "",
+      "options": {
+        "nestRemoting": true,
+        "disableInclude": true
+      }
+    }
+  },
   "acls": [
     {
       "accessType": "*",
