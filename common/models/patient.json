@@ -49,5 +49,31 @@
       "permission": "DENY"
     }
   ],
-  "methods": {}
+  "methods": {
+    "withConnectedSensor": {
+      "accepts": [],
+      "returns": [{"type":"[Patient]","root":true}],
+      "description": "Returns all patients that have at least one connected sensor at the moment.",
+      "http": [
+        {
+          "path": "/withConnectedSensor",
+          "verb": "get"
+        }
+      ]
+    },
+    "withConnectedSensorAt": {
+      "accepts": [
+        {"arg":"from","type":"date"},
+        {"arg":"to","type":"date"}
+      ],
+      "returns": [{"type":"[Patient]","root":true}],
+      "description": "Returns all patients that have at least one connected sensor during a given time interval.",
+      "http": [
+        {
+          "path": "/withConnectedSensorAt",
+          "verb": "get"
+        }
+      ]
+    }
+  }
 }

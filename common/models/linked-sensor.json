@@ -5,6 +5,9 @@
   "options": {
     "validateUpsert": true
   },
+  "hidden": [
+    "savedData"
+  ],
   "properties": {
     "altPatIdentifier": {
       "type": "string"
@@ -31,10 +34,9 @@
       "type": [
         "MeasuredData"
       ],
-      "default":[]
+      "default": []
     }
   },
-  "hidden": ["savedData"],
   "validations": [],
   "relations": {},
   "acls": [
