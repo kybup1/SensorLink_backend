@@ -18,11 +18,8 @@
       "type": "string",
       "required": true
     },
-    "measurementString": {
-      "type": "string"
-    },
-    "measurementCode": {
-      "type": "string"
+    "reading": {
+      "type":"Reading"
     },
     "unit": {
       "type": "string"

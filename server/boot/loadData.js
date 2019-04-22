@@ -12,13 +12,21 @@ module.exports = function(app, cb) {
     let readingPulse = new app.models.Reading({
       "sensorType":"Everion",
       "measurementString":"Puls",
-      "measurementCode":"8867-4",
+      "measurementCode":[{
+        "code":"8867-4",
+        "system":'loinc',
+        "display":"Heartrate"
+      }],
       "Unit":"/min"
     });
     let readingSaturation = new app.models.Reading({
       "sensorType":"everion",
       "measurementString":"Sauerstoffsättigung",
-      "measurementCode":"20564-1",
+      "measurementCode":[{
+        "code":"20564-1",
+        "system":'loinc',
+        "display":"Oxygen saturation"
+      }],
       "Unit":"%"
     });
     let sensor = app.models.SensorInstance.create({
@@ -46,12 +54,12 @@ module.exports = function(app, cb) {
         "dataAccess": {},
       })
       misterTestLinkedGeraet.savedData = misterTestLinkedGeraet.savedData.concat([
-        {"sensor":"everion-1","timestamp":subtractFromNow(1, 1, 30, 50),"value":"80","measurementString":"Pulse"},
-        {"sensor":"everion-1","timestamp":subtractFromNow(1, 1, 30, 5),"value":"85","measurementString":"Pulse"},
-        {"sensor":"everion-1","timestamp":subtractFromNow(1, 1, 28, 20),"value":"90","measurementString":"Pulse"},
-        {"sensor":"everion-1","timestamp":subtractFromNow(1, 1, 27, 30),"value":"91","measurementString":"Pulse"},
-        {"sensor":"everion-1","timestamp":subtractFromNow(1, 1, 36, 40),"value":"90","measurementString":"Pulse"},
-        {"sensor":"everion-1","timestamp":subtractFromNow(1, 1, 26, 0),"value":"86","measurementString":"Pulse"},
+        {"sensor":"everion-1","timestamp":subtractFromNow(1, 1, 30, 50),"value":"80","reading":readingPulse},
+        {"sensor":"everion-1","timestamp":subtractFromNow(1, 1, 30, 5),"value":"85","reading":readingPulse},
+        {"sensor":"everion-1","timestamp":subtractFromNow(1, 1, 28, 20),"value":"90","reading":readingPulse},
+        {"sensor":"everion-1","timestamp":subtractFromNow(1, 1, 27, 30),"value":"91","reading":readingPulse},
+        {"sensor":"everion-1","timestamp":subtractFromNow(1, 1, 36, 40),"value":"90","reading":readingPulse},
+        {"sensor":"everion-1","timestamp":subtractFromNow(1, 1, 26, 0),"value":"86","reading":readingPulse}
       ])
       misterTest.linkedSensors.push(misterTestLinkedGeraet)
       return misterTest
@@ -79,18 +87,18 @@ module.exports = function(app, cb) {
         "dataAccess": {},
       })
       TestPat2LinkedSensor.savedData = TestPat2LinkedSensor.savedData.concat([
-        {"sensor":"everion-1","timestamp":subtractFromNow(10, 1, 30, 50),"value":"80","measurementString":"Pulse"},
-        {"sensor":"everion-1","timestamp":subtractFromNow(10, 1, 30, 5),"value":"85","measurementString":"Pulse"},
-        {"sensor":"everion-1","timestamp":subtractFromNow(10, 1, 28, 20),"value":"90","measurementString":"Pulse"},
-        {"sensor":"everion-1","timestamp":subtractFromNow(10, 1, 27, 30),"value":"91","measurementString":"Pulse"},
-        {"sensor":"everion-1","timestamp":subtractFromNow(10, 1, 36, 40),"value":"90","measurementString":"Pulse"},
-        {"sensor":"everion-1","timestamp":subtractFromNow(10, 1, 26, 0),"value":"86","measurementString":"Pulse"},
-        {"sensor":"everion-1","timestamp":subtractFromNow(10, 1, 30, 50),"value":"96","measurementString":"Sauerstoffsättigung"},
-        {"sensor":"everion-1","timestamp":subtractFromNow(10, 1, 30, 5),"value":"98","measurementString":"Sauerstoffsättigung"},
-        {"sensor":"everion-1","timestamp":subtractFromNow(10, 1, 28, 20),"value":"97","measurementString":"Sauerstoffsättigung"},
-        {"sensor":"everion-1","timestamp":subtractFromNow(10, 1, 27, 30),"value":"98","measurementString":"Sauerstoffsättigung"},
-        {"sensor":"everion-1","timestamp":subtractFromNow(10, 1, 36, 40),"value":"95","measurementString":"Sauerstoffsättigung"},
-        {"sensor":"everion-1","timestamp":subtractFromNow(10, 1, 26, 0),"value":"98","measurementString":"Sauerstoffsättigung"}
+        {"sensor":"everion-1","timestamp":subtractFromNow(10, 1, 30, 50),"value":"80","reading":readingPulse},
+        {"sensor":"everion-1","timestamp":subtractFromNow(10, 1, 30, 5),"value":"85","reading":readingPulse},
+        {"sensor":"everion-1","timestamp":subtractFromNow(10, 1, 28, 20),"value":"90","reading":readingPulse},
+        {"sensor":"everion-1","timestamp":subtractFromNow(10, 1, 27, 30),"value":"91","reading":readingPulse},
+        {"sensor":"everion-1","timestamp":subtractFromNow(10, 1, 36, 40),"value":"90","reading":readingPulse},
+        {"sensor":"everion-1","timestamp":subtractFromNow(10, 1, 26, 0),"value":"86","reading":readingPulse},
+        {"sensor":"everion-1","timestamp":subtractFromNow(10, 1, 30, 50),"value":"96","reading":readingSaturation},
+        {"sensor":"everion-1","timestamp":subtractFromNow(10, 1, 30, 5),"value":"98","reading":readingSaturation},
+        {"sensor":"everion-1","timestamp":subtractFromNow(10, 1, 28, 20),"value":"97","reading":readingSaturation},
+        {"sensor":"everion-1","timestamp":subtractFromNow(10, 1, 27, 30),"value":"98","reading":readingSaturation},
+        {"sensor":"everion-1","timestamp":subtractFromNow(10, 1, 36, 40),"value":"95","reading":readingSaturation},
+        {"sensor":"everion-1","timestamp":subtractFromNow(10, 1, 26, 0),"value":"98","reading":readingSaturation}
       ])
       testPat2.linkedSensors.push(TestPat2LinkedSensor)
       return testPat2

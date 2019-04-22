@@ -15,7 +15,10 @@
       "required": true
     },
     "measurementCode": {
-      "type": "string"
+      "type": [
+        "Coding"
+      ],
+      "default":[]
     },
     "unit": {
       "type": "string"

@@ -1,0 +1,29 @@
+{
+  "name": "Coding",
+  "base": "Model",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "system": {
+      "type": "string",
+      "required": true
+    },
+    "version": {
+      "type": "string"
+    },
+    "code": {
+      "type": "string",
+      "required": true
+    },
+    "display": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}
