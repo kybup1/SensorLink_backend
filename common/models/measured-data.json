@@ -19,7 +19,7 @@
       "required": true
     },
     "reading": {
-      "type":"Reading"
+      "type": "Reading"
     },
     "unit": {
       "type": "string"

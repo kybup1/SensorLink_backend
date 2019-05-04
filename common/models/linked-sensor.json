@@ -30,6 +30,9 @@
     "dataAccess": {
       "type": "any"
     },
+    "readings": {
+      "type":"[Readings]"
+    },
     "savedData": {
       "type": [
         "MeasuredData"

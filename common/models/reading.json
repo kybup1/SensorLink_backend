@@ -18,7 +18,7 @@
       "type": [
         "Coding"
       ],
-      "default":[]
+      "default": []
     },
     "unit": {
       "type": "string"

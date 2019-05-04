@@ -10,7 +10,7 @@
     "sensorIdentifier": {
       "type": "string",
       "id": true,
-      "primary": true
+      "required": true
     },
     "sensorType": {
       "type": "string",

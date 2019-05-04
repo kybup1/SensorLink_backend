@@ -27,6 +27,9 @@
         "LinkedSensor"
       ],
       "default": []
+    },
+    "lastMeasurementEntry": {
+      "type": "date"
     }
   },
   "validations": [],
@@ -88,6 +91,56 @@
         {
           "path": "/withConnectedSensorAt",
           "verb": "get"
+        }
+      ]
+    },
+    "orderByLastEntry": {
+      "accepts": [],
+      "returns": [
+        {
+          "type": "[Patient]",
+          "root": true
+        }
+      ],
+      "description": "Returns all patients that have at least one connected sensor during a given time interval.",
+      "http": [
+        {
+          "path": "/orderByLastEntry",
+          "verb": "get"
+        }
+      ]
+    },
+    "linkSensor": {
+      "accepts": [
+        {
+          "arg":"id",
+          "type":"string"
+        },
+        {
+          "arg":"sensorIdentifier",
+          "type":"string",
+          "required":true
+        },
+        {
+          "arg":"date",
+          "type":"date"
+        },
+        {
+          "arg":"altPatId",
+          "type":"string"
+        }
+      ],
+      "returns": [
+        {
+          "type":"LinkedSensor",
+          "root":"true"
+        }
+      ],
+      "description": "Linkes a new sensor to a patient",
+      "http": [
+        {
+          "path": "/:id/linkSensor",
+          "verb": "post"
         }
       ]
     }

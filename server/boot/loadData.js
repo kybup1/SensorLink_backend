@@ -62,6 +62,7 @@ module.exports = function(app, cb) {
         {"sensor":"everion-1","timestamp":subtractFromNow(1, 1, 26, 0),"value":"86","reading":readingPulse}
       ])
       misterTest.linkedSensors.push(misterTestLinkedGeraet)
+      misterTest.lastMeasurementEntry = subtractFromNow(1, 1, 26, 0);
       return misterTest
     }).then(misterTest =>{
       misterTest.save()
@@ -100,7 +101,8 @@ module.exports = function(app, cb) {
         {"sensor":"everion-1","timestamp":subtractFromNow(10, 1, 36, 40),"value":"95","reading":readingSaturation},
         {"sensor":"everion-1","timestamp":subtractFromNow(10, 1, 26, 0),"value":"98","reading":readingSaturation}
       ])
-      testPat2.linkedSensors.push(TestPat2LinkedSensor)
+      testPat2.linkedSensors.push(TestPat2LinkedSensor);
+      testPat2.lastMeasurementEntry = subtractFromNow(10, 1, 26, 0);
       return testPat2
     }).then(testPat2 =>{
       testPat2.save()
