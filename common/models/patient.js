@@ -91,8 +91,44 @@ module.exports = function(Patient) {
 
     }).then((result) =>{
       cb(null, {"Success":"Sensor linked to patient"})
-    }).catch(err => cb(err))
-
-
+    }).catch(error => cb(err))
   };
+
+  Patient.unlinkSensor = function(patid, sensorid, date, cb){
+    let promPatient = Patient.findOne({"where":{"patId":patid}});
+    let promSenosr = Patient.app.models.SensorInstance.findOne({"where":{"sensorIdentifier":sensorid}})
+    Promise.all([promPatient, promSenosr]).then((result) => {
+      if (result[0] == null) {
+        cb({"error":"Patient not found"})
+      } else if (result[1] == null) {
+        cb({"error":"Sensor not found"})
+      }
+      let patient = result[0];
+      let sensor = result[1];
+
+      if (sensor.linkedPatId == null) {
+        cb({"error":"Sensor has no linked patient"});
+      } else if (sensor.linkedPatId != patient.patId) {
+        cb({"error":"Sensor is linked to another patient"})
+      }
+
+      for (let i = 0; i < patient.linkedSensors.length; i++) {
+        let lSensor = patient.linkedSensors[i];
+        if(lSensor.sensor==sensorid && lSensor.isConnected==true) {
+          lSensor.isConnected=false;
+          if (date == null) {
+            lSensor.to = new Date();
+          } else {
+            lSensor.to = date;
+          }
+          sensor.linkedPatId=null;
+          break;
+        }
+      }
+      return Promise.all([patient.save(), sensor.save()]);
+
+    }).then((result) =>{
+      cb(null, {"Success":"Sensor unlinked from patient"});
+    }).catch(err => cb(err))
+  }
 };

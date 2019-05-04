@@ -136,10 +136,40 @@
           "root":"true"
         }
       ],
-      "description": "Linkes a new sensor to a patient",
+      "description": "Links a new sensor to a patient",
       "http": [
         {
           "path": "/:id/linkSensor",
+          "verb": "post"
+        }
+      ]
+    },
+    "unlinkSensor": {
+      "accepts": [
+        {
+          "arg":"id",
+          "type":"string"
+        },
+        {
+          "arg":"sensorIdentifier",
+          "type":"string",
+          "required":true
+        },
+        {
+          "arg":"date",
+          "type":"date"
+        }
+      ],
+      "returns": [
+        {
+          "type":"LinkedSensor",
+          "root":"true"
+        }
+      ],
+      "description": "Unlinks a sensor from a patient",
+      "http": [
+        {
+          "path": "/:id/unlinkSensor",
           "verb": "post"
         }
       ]
