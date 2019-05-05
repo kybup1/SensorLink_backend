@@ -173,6 +173,88 @@
           "verb": "post"
         }
       ]
+    },
+    "getMeasurements": {
+      "accepts": [
+        {
+          "arg":"id",
+          "type":"string"
+        },
+        {
+          "arg":"from",
+          "type":"date",
+          "required":true
+        },
+        {
+          "arg":"to",
+          "type":"date"
+        },
+        {
+          "arg":"readings",
+          "type":[
+            "Reading"
+          ]
+        }
+      ],
+      "returns": [
+        {
+          "type":[
+            "MeasuredData"
+          ],
+          "root":"true"
+        }
+      ],
+      "description": "Returns the measured data from a patient during a given time period. Can be filtered to return only selected readings.",
+      "http": [
+        {
+          "path": "/:id/measurements",
+          "verb": "get"
+        }
+      ]
+    },
+    "measurements": {
+      "accepts": [
+        {
+          "arg":"id",
+          "type":"string",
+          "required":true
+        },
+        {
+          "arg":"timestamp",
+          "type":"date",
+          "required":true
+        },
+        {
+          "arg":"sensorIdentifier",
+          "type":"string",
+          "required":true
+        },
+        {
+          "arg":"value",
+          "type":"string",
+          "required":true
+        },
+        {
+          "arg":"reading",
+          "type":"Reading",
+          "required":true
+        }
+      ],
+      "returns": [
+        {
+          "type":[
+            "MeasuredData"
+          ],
+          "root":"true"
+        }
+      ],
+      "description": "Saves measured data to a patient",
+      "http": [
+        {
+          "path": "/:id/measurements",
+          "verb": "post"
+        }
+      ]
     }
   }
 }

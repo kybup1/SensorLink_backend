@@ -11,6 +11,7 @@
     "password": "",
     "name": "mongoDB",
     "user": "",
-    "connector": "mongodb"
+    "connector": "mongodb",
+    "timeZone":"Europe/Amsterdam"
   }
 }

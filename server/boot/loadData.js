@@ -9,6 +9,7 @@ module.exports = function(app, cb) {
    * for more info.
    */
   Promise.all([app.models.Patient.destroyAll(), app.models.SensorInstance.destroyAll()]).then((res) => {
+    console.log(new Date())
     let readingPulse = new app.models.Reading({
       "sensorType":"Everion",
       "measurementString":"Puls",
@@ -48,7 +49,7 @@ module.exports = function(app, cb) {
     }).then(misterTest => {
       let misterTestLinkedGeraet = new app.models.LinkedSensor({
         "altPatIdentifier": "1234",
-        "sensor": sensor.sensorIdentifier,
+        "sensor": "everion-1",
         "from": subtractFromNow(1, 3, 0, 0),
         "isConnected": true,
         "dataAccess": {},
@@ -81,9 +82,9 @@ module.exports = function(app, cb) {
     }).then(testPat2 => {
       let TestPat2LinkedSensor = new app.models.LinkedSensor({
         "altPatIdentifier": "1234",
-        "sensor": sensor.sensorIdentifier,
+        "sensor": "everion-1",
         "from": subtractFromNow(10, 3, 0, 0),
-        "to":subtractFromNow(9, 0, 0, 0),
+        "to":subtractFromNow(7, 0, 0, 0),
         "isConnected": false,
         "dataAccess": {},
       })
