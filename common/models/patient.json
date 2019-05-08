@@ -216,21 +216,18 @@
       "accepts": [
         {
           "arg":"id",
-          "type":"string",
-          "required":true
+          "type":"string"
         },
         {
-          "arg":"timestamp",
-          "type":"date",
-          "required":true
+          "arg":"values",
+          "type":[
+            "object"
+          ],
+          "required":"true",
+          "description":"Should contain the individual measured values as JSON objects in the folowing format: </br> {'timestamp':'', </br> 'value':''}"
         },
         {
           "arg":"sensorIdentifier",
-          "type":"string",
-          "required":true
-        },
-        {
-          "arg":"value",
           "type":"string",
           "required":true
         },

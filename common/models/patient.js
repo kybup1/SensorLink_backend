@@ -173,30 +173,51 @@ module.exports = function(Patient) {
     }).catch(err => cb(err))
   }
 
-  Patient.measurements = function(id, timestamp, sensor, value, reading , cb) {
+  Patient.measurements = function(id, values, sensorIdentifier, reading , cb) {
     Patient.findOne({"where":{"patId":id}}).then(patient => {
-      console.log(reading)
-      let measurement = new Patient.app.models.MeasuredData();
+      if(!patient){
+
+      }
       let lSensor = patient.linkedSensors.find(function(ls) {
-        return ls.sensor == sensor;
+        return ls.sensor == sensorIdentifier;
       })
       if(lSensor == null) {
         cb({"error":"Sensor is not linked with this patient"});
-      } else if (timestamp < lSensor.from) {
-        cb({"error":"Timestamp is invalid"})
       } else if (!reading.sensorType || !reading.measurementCode || !reading.measurementCode[0].code){
         cb({"error":"Reading object is invalid"});
       }
-      measurement.timestamp = timestamp;
-      measurement.sensor = sensor;
-      measurement.value = value;
-      measurement.reading = reading;
-      lSensor.savedData.push(measurement);
-      if(timestamp > patient.lastMeasurementEntry) {
-        patient.lastMeasurementEntry = timestamp;
+
+      let faultyObjs = [];
+      let measurements = [];
+
+      values.forEach(valueObj => {
+        valueObj.timestamp = new Date(valueObj.timestamp);
+        if (!valueObj.value || !valueObj.timestamp){
+          faultyObjs.push({"Error:":"Value Object is not complete with timestamp, value","Object":valueObj})
+        } else if (lSensor.from < valueObj.timestamp){
+          faultyObjs.push({"Error:":"Sensor is not connected to patient at the given timestamp"})
+        } else if (lSensor.savedData.some((e) => e.timestamp.toISOString() == valueObj.timestamp.toISOString())) {
+          console.log(lSensor.savedData.some((e) => e.timestamp.toISOString() == valueObj.timestamp.toISOString()))
+          faultyObjs.push({"Error:":"Value with this timestamp already exists","Object":valueObj})
+        }
+
+        let measurement =  new Patient.app.models.MeasuredData();
+        measurement.timestamp=valueObj.timestamp;
+        measurement.sensor=sensorIdentifier;
+        measurement.value=valueObj.value;
+        measurement.reading=reading;
+
+        measurements.push(measurement);
+      })
+
+      if(faultyObjs.length!=0){
+        cb({"error":"Some provided value objects were faulty","faulty Objects:":faultyObjs})
+      } else {
+        lSensor.savedData = lSensor.savedData.concat(measurements);
+        //console.log(patient.linkedSensors)
+        return patient.save();
       }
-      console.log(patient.linkedSensors)
-      return patient.save();
+
     }).then(patient => cb(null, {"Success":"Measurement saved"})).catch(err => cb(err))
   }
 
