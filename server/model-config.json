@@ -14,7 +14,11 @@
     ]
   },
   "User": {
-    "dataSource": "mongoDB"
+    "dataSource": "mongoDB",
+    "options": {
+      "allowEternalTokens": true
+    }
+
   },
   "AccessToken": {
     "dataSource": "mongoDB",
