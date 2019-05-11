@@ -31,7 +31,10 @@
       "type": "any"
     },
     "readings": {
-      "type":"[Readings]"
+      "type":[
+        "Reading"
+      ],
+      "default":[]
     },
     "savedData": {
       "type": [
