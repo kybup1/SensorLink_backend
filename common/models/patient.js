@@ -194,9 +194,9 @@ module.exports = function(Patient) {
         valueObj.timestamp = new Date(valueObj.timestamp);
         if (!valueObj.value || !valueObj.timestamp){
           faultyObjs.push({"Error:":"Value Object is not complete with timestamp, value","Object":valueObj})
-        } else if (lSensor.from < valueObj.timestamp){
-          faultyObjs.push({"Error:":"Sensor is not connected to patient at the given timestamp"})
-        } else if (lSensor.savedData.some((e) => e.timestamp.toISOString() == valueObj.timestamp.toISOString())) {
+        } else if (lSensor.from >= valueObj.timestamp){
+          faultyObjs.push({"Error:":"Sensor is not connected to patient at the given timestamp","Object":valueObj})
+        } else if (lSensor.savedData.some((e) => { return (e.timestamp.toISOString() == valueObj.timestamp.toISOString() && e.reading.measurementCode[0].code == reading.measurementCode[0].code)})) {
           console.log(lSensor.savedData.some((e) => e.timestamp.toISOString() == valueObj.timestamp.toISOString()))
           faultyObjs.push({"Error:":"Value with this timestamp already exists","Object":valueObj})
         }
