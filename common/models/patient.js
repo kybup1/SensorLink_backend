@@ -138,7 +138,7 @@ module.exports = function(Patient) {
       to.setDate(to.getDate() + 1);
     };
     Patient.findOne({"where":{"patId":id}}).then((patient) => {
-      if(patient==null){
+      if(patient==null) {
         cb({"error":"Patient not found"});
       };
       let lSensors = [];
@@ -189,6 +189,10 @@ module.exports = function(Patient) {
 
       let faultyObjs = [];
       let measurements = [];
+      let lastEntryDate = new Date("1900-01-01");
+      if(patient.lastMeasurementEntry) {
+        lastEntryDate = new Date(patient.lastMeasurementEntry.toISOString())
+      };
 
       values.forEach(valueObj => {
         valueObj.timestamp = new Date(valueObj.timestamp);
@@ -207,6 +211,9 @@ module.exports = function(Patient) {
         measurement.value=valueObj.value;
         measurement.reading=reading;
 
+        if(valueObj.timestamp > lastEntryDate) {
+          patient.lastMeasurementEntry = valueObj.timestamp;
+        };
         measurements.push(measurement);
       })
 
@@ -214,7 +221,6 @@ module.exports = function(Patient) {
         cb({"error":"Some provided value objects were faulty","faulty Objects:":faultyObjs})
       } else {
         lSensor.savedData = lSensor.savedData.concat(measurements);
-        //console.log(patient.linkedSensors)
         return patient.save();
       }
 
