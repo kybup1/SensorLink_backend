@@ -190,10 +190,8 @@
           "type":"date"
         },
         {
-          "arg":"readings",
-          "type":[
-            "Reading"
-          ]
+          "arg":"code",
+          "type": "string"
         }
       ],
       "returns": [
@@ -219,21 +217,15 @@
           "type":"string"
         },
         {
-          "arg":"values",
+          "arg":"measurements",
           "type":[
-            "object"
+            "MeasuredData"
           ],
-          "required":"true",
-          "description":"Should contain the individual measured values as JSON objects in the folowing format: </br> {'timestamp':'', </br> 'value':''}"
+          "required":"true"
         },
         {
           "arg":"sensorIdentifier",
           "type":"string",
-          "required":true
-        },
-        {
-          "arg":"reading",
-          "type":"Reading",
           "required":true
         }
       ],

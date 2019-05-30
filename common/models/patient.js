@@ -132,7 +132,7 @@ module.exports = function(Patient) {
     }).catch(err => cb(err))
   }
 
-  Patient.getMeasurements = function(id, from, to, readings, cb) {
+  Patient.getMeasurements = function(id, from, to, code, cb) {
     if(to == null) {
       to = new Date();
       to.setDate(to.getDate() + 1);
@@ -156,8 +156,8 @@ module.exports = function(Patient) {
         measurements = measurements.concat(result);
       });
 
-      if (readings) {
-        measurements = measurements.filter(data => filterReadings(data.reading, readings));
+      if (code) {
+        measurements = measurements.filter(data => filterReadings(data.reading, code));
       };
 
       let measurementsSorted = measurements.sort(function(a, b) {
@@ -173,56 +173,33 @@ module.exports = function(Patient) {
     }).catch(err => cb(err))
   }
 
-  Patient.measurements = function(id, values, sensorIdentifier, reading , cb) {
+  Patient.measurements = function(id, measurements, sensorIdentifier, cb) {
     Patient.findOne({"where":{"patId":id}}).then(patient => {
       if(!patient){
-
+        cb({"error":"patient not found"});
       }
       let lSensor = patient.linkedSensors.find(function(ls) {
         return ls.sensor == sensorIdentifier;
       })
       if(lSensor == null) {
         cb({"error":"Sensor is not linked with this patient"});
-      } else if (!reading.sensorType || !reading.measurementCode || !reading.measurementCode[0].code){
-        cb({"error":"Reading object is invalid"});
       }
 
-      let faultyObjs = [];
-      let measurements = [];
       let lastEntryDate = new Date("1900-01-01");
       if(patient.lastMeasurementEntry) {
         lastEntryDate = new Date(patient.lastMeasurementEntry.toISOString())
       };
 
-      values.forEach(valueObj => {
-        valueObj.timestamp = new Date(valueObj.timestamp);
-        if (!valueObj.value || !valueObj.timestamp){
-          faultyObjs.push({"Error:":"Value Object is not complete with timestamp, value","Object":valueObj})
-        } else if (lSensor.from >= valueObj.timestamp){
-          faultyObjs.push({"Error:":"Sensor is not connected to patient at the given timestamp","Object":valueObj})
-        } else if (lSensor.savedData.some((e) => { return (e.timestamp.toISOString() == valueObj.timestamp.toISOString() && e.reading.measurementCode[0].code == reading.measurementCode[0].code)})) {
-          console.log(lSensor.savedData.some((e) => e.timestamp.toISOString() == valueObj.timestamp.toISOString()))
-          faultyObjs.push({"Error:":"Value with this timestamp already exists","Object":valueObj})
-        }
+      measurements.forEach(measurement => {
+        measurement.timestamp = new Date(measurement.timestamp);
 
-        let measurement =  new Patient.app.models.MeasuredData();
-        measurement.timestamp=valueObj.timestamp;
-        measurement.sensor=sensorIdentifier;
-        measurement.value=valueObj.value;
-        measurement.reading=reading;
-
-        if(valueObj.timestamp > lastEntryDate) {
-          patient.lastMeasurementEntry = valueObj.timestamp;
+        if(measurement.timestamp > lastEntryDate) {
+          patient.lastMeasurementEntry = measurement.timestamp;
         };
-        measurements.push(measurement);
       })
-
-      if(faultyObjs.length!=0){
-        cb({"error":"Some provided value objects were faulty","faulty Objects:":faultyObjs})
-      } else {
-        lSensor.savedData = lSensor.savedData.concat(measurements);
-        return patient.save();
-      }
+      lSensor.savedData = lSensor.savedData.concat(measurements);
+      console.log(measurements[0]);
+      return patient.save();
 
     }).then(patient => cb(null, {"Success":"Measurement saved"})).catch(err => cb(err))
   }
@@ -248,14 +225,6 @@ let isInTimeInterval = function(date, from, to) {
   return isInInterval;
 }
 
-let filterReadings = function(reading, readings) {
-  let isIncluded = false;
-  readings.forEach(r1 => {
-    r1.measurementCode.forEach(r1Coding => {
-      if(r1Coding.code == reading.measurementCode[0].code) {
-        isIncluded = true;
-      }
-    });
-  });
-  return isIncluded;
+let filterReadings = function(reading, code) {
+  return reading.measurementCode[0].code == code;
 };
