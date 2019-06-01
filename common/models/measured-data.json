@@ -1,14 +1,13 @@
 {
   "name": "MeasuredData",
-  "base": "Model",
-  "idInjection": false,
+  "base": "PersistedModel",
+  "idInjection": true,
   "options": {
     "validateUpsert": true
   },
   "properties": {
     "timestamp": {
       "type": "date",
-      "id":true,
       "required": true
     },
     "sensor": {

@@ -18,7 +18,6 @@
     "options": {
       "allowEternalTokens": true
     }
-
   },
   "AccessToken": {
     "dataSource": "mongoDB",
@@ -44,7 +43,7 @@
     "public": true
   },
   "MeasuredData": {
-    "dataSource": null,
+    "dataSource": "mongoDB",
     "public": false
   },
   "Reading": {
@@ -56,7 +55,7 @@
     "public": true
   },
   "LinkedSensor": {
-    "dataSource": null,
+    "dataSource": "mongoDB",
     "public": false
   },
   "Event": {

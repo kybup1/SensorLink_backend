@@ -6,12 +6,12 @@
   "mongoDB": {
     "host": "localhost",
     "port": 27017,
-    "url": "mongodb://localhost:27017/sensorlink",
-    "database": "sensorlink",
+    "url": "mongodb://localhost:27017/sensorlink2",
+    "database": "sensorlink2",
     "password": "",
     "name": "mongoDB",
     "user": "",
     "connector": "mongodb",
-    "timeZone":"Europe/Amsterdam"
+    "timeZone": "Europe/Amsterdam"
   }
 }
