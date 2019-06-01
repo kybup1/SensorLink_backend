@@ -6,8 +6,8 @@
   "mongoDB": {
     "host": "localhost",
     "port": 27017,
-    "url": "mongodb://localhost:27017/sensorlink2",
-    "database": "sensorlink2",
+    "url": "mongodb://localhost:27017/sensorlink",
+    "database": "sensorlink",
     "password": "",
     "name": "mongoDB",
     "user": "",
