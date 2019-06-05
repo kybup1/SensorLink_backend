@@ -1,18 +1,15 @@
 {
   "name": "LinkedSensor",
-  "base": "Model",
-  "idInjection": false,
+  "base": "PersistedModel",
+  "idInjection": true,
   "options": {
     "validateUpsert": true
   },
-  "hidden": [
-    "savedData"
-  ],
   "properties": {
     "altPatIdentifier": {
       "type": "string"
     },
-    "sensor": {
+    "sensorIdentifier": {
       "type": "string",
       "required": true
     },
@@ -31,20 +28,27 @@
       "type": "any"
     },
     "readings": {
-      "type":[
-        "Reading"
-      ],
-      "default":[]
-    },
-    "savedData": {
       "type": [
-        "MeasuredData"
+        "Reading"
       ],
       "default": []
     }
   },
   "validations": [],
-  "relations": {},
+  "relations": {
+    "measuredData": {
+      "type": "hasMany",
+      "model": "MeasuredData",
+      "foreignKey": "",
+      "options": {
+        "disableInclude": true
+      }
+    },
+    "patient": {
+      "type": "belongsTo",
+      "model": "Patient"
+    }
+  },
   "acls": [
     {
       "accessType": "*",

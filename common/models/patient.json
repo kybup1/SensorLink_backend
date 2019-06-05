@@ -22,12 +22,6 @@
     "birthdate": {
       "type": "date"
     },
-    "linkedSensors": {
-      "type": [
-        "LinkedSensor"
-      ],
-      "default": []
-    },
     "lastMeasurementEntry": {
       "type": "date"
     }
@@ -42,6 +36,12 @@
         "nestRemoting": true,
         "disableInclude": true
       }
+    },
+    "linkedSensors": {
+      "type": "hasMany",
+      "model": "LinkedSensor",
+      "property": "linkedSensors",
+      "foreignKey":"patId"
     }
   },
   "acls": [
@@ -69,31 +69,6 @@
         }
       ]
     },
-    "withConnectedSensorAt": {
-      "accepts": [
-        {
-          "arg": "from",
-          "type": "date"
-        },
-        {
-          "arg": "to",
-          "type": "date"
-        }
-      ],
-      "returns": [
-        {
-          "type": "[Patient]",
-          "root": true
-        }
-      ],
-      "description": "Returns all patients that have at least one connected sensor during a given time interval.",
-      "http": [
-        {
-          "path": "/withConnectedSensorAt",
-          "verb": "get"
-        }
-      ]
-    },
     "orderByLastEntry": {
       "accepts": [],
       "returns": [
@@ -113,27 +88,27 @@
     "linkSensor": {
       "accepts": [
         {
-          "arg":"id",
-          "type":"string"
+          "arg": "id",
+          "type": "string"
         },
         {
-          "arg":"sensorIdentifier",
-          "type":"string",
-          "required":true
+          "arg": "sensorIdentifier",
+          "type": "string",
+          "required": true
         },
         {
-          "arg":"date",
-          "type":"date"
+          "arg": "date",
+          "type": "date"
         },
         {
-          "arg":"altPatId",
-          "type":"string"
+          "arg": "altPatId",
+          "type": "string"
         }
       ],
       "returns": [
         {
-          "type":"LinkedSensor",
-          "root":"true"
+          "type": "LinkedSensor",
+          "root": "true"
         }
       ],
       "description": "Links a new sensor to a patient",
@@ -147,23 +122,23 @@
     "unlinkSensor": {
       "accepts": [
         {
-          "arg":"id",
-          "type":"string"
+          "arg": "id",
+          "type": "string"
         },
         {
-          "arg":"sensorIdentifier",
-          "type":"string",
-          "required":true
+          "arg": "sensorIdentifier",
+          "type": "string",
+          "required": true
         },
         {
-          "arg":"date",
-          "type":"date"
+          "arg": "date",
+          "type": "date"
         }
       ],
       "returns": [
         {
-          "type":"LinkedSensor",
-          "root":"true"
+          "type": "LinkedSensor",
+          "root": "true"
         }
       ],
       "description": "Unlinks a sensor from a patient",
@@ -177,31 +152,29 @@
     "getMeasurements": {
       "accepts": [
         {
-          "arg":"id",
-          "type":"string"
+          "arg": "id",
+          "type": "string"
         },
         {
-          "arg":"from",
-          "type":"date",
-          "required":true
+          "arg": "from",
+          "type": "date",
+          "required": true
         },
         {
-          "arg":"to",
-          "type":"date"
+          "arg": "to",
+          "type": "date"
         },
         {
-          "arg":"readings",
-          "type":[
-            "Reading"
-          ]
+          "arg": "code",
+          "type": "string"
         }
       ],
       "returns": [
         {
-          "type":[
+          "type": [
             "MeasuredData"
           ],
-          "root":"true"
+          "root": "true"
         }
       ],
       "description": "Returns the measured data from a patient during a given time period. Can be filtered to return only selected readings.",
@@ -215,34 +188,28 @@
     "measurements": {
       "accepts": [
         {
-          "arg":"id",
-          "type":"string"
+          "arg": "id",
+          "type": "string"
         },
         {
-          "arg":"values",
-          "type":[
-            "object"
+          "arg": "measurements",
+          "type": [
+            "MeasuredData"
           ],
-          "required":"true",
-          "description":"Should contain the individual measured values as JSON objects in the folowing format: </br> {'timestamp':'', </br> 'value':''}"
+          "required": "true"
         },
         {
-          "arg":"sensorIdentifier",
-          "type":"string",
-          "required":true
-        },
-        {
-          "arg":"reading",
-          "type":"Reading",
-          "required":true
+          "arg": "sensorIdentifier",
+          "type": "string",
+          "required": true
         }
       ],
       "returns": [
         {
-          "type":[
+          "type": [
             "MeasuredData"
           ],
-          "root":"true"
+          "root": "true"
         }
       ],
       "description": "Saves measured data to a patient",

@@ -1,63 +1,41 @@
 'use strict';
 
-module.exports = function(Patient) {
-  Patient.withConnectedSensor = function(cb) {
-    Patient.find().then((patients) => {
-      let selectedPatients = [];
-      patients.forEach(pat => {
-        let addPatient = false;
-        pat.linkedSensors.forEach(ls => {
-          if (ls.isConnected == true) {
-            addPatient = true;
-          }
-        });
-
-        if (addPatient == true) {
-          selectedPatients.push(pat);
+module.exports = async (Patient) => {
+  Patient.withConnectedSensor = async (cb) => {
+    let patients = await Patient.find();
+    let selectedPatients = [];
+    for (const pat of patients) {
+      let addPatient = false;
+      let lSensors = await pat.linkedSensors.find();
+      lSensors.forEach(ls => {
+        if (ls.isConnected == true) {
+          addPatient = true;
         }
       });
-      cb(null, selectedPatients);
-    });
+
+      if (addPatient == true) {
+        selectedPatients.push(pat);
+      }
+    };
+    cb(null, selectedPatients);
   };
 
-  Patient.withConnectedSensorAt = function(from, to, cb) {
-    Patient.find().then((patients) => {
-      let selectedPatients = [];
-      patients.forEach(pat => {
-        let addPatient = false;
-        pat.linkedSensors.forEach(ls => {
-          if (ls.isConnected == true && ls.from.setHours(0, 0, 0, 0) <= from) {
-            addPatient = true;
-          } else if (ls.to && ls.from.setHours(0, 0, 0, 0) >= from.setHours(0, 0, 0, 0) && ls.to.setHours(0, 0, 0, 0) <= to.setHours(0, 0, 0, 0)) {
-            addPatient = true;
-          }
-        });
+  Patient.orderByLastEntry = async (cb) => {
+    let patients = await Patient.find();
+    let sortedPatients = patients.filter(pat => pat.lastMeasurementEntry != null);
 
-        if (addPatient == true) {
-          selectedPatients.push(pat);
-        }
-      });
-      cb(null, selectedPatients);
+    sortedPatients.sort(function(a, b) {
+      let dateA = new Date(a.lastMeasurementEntry)
+      let dateB = new Date(b.lastMeasurementEntry);
+      if (dateA < dateB) return 1;
+      else if (dateA > dateB) return -1;
+      return 0;
     });
-  };
-
-  Patient.orderByLastEntry = function(cb) {
-    Patient.find().then((patients) => {
-      let sortedPatients = patients.filter(pat => pat.lastMeasurementEntry != null);
-
-      sortedPatients.sort(function(a, b) {
-        let dateA = new Date(a.lastMeasurementEntry)
-        let dateB = new Date(b.lastMeasurementEntry);
-        if (dateA < dateB) return 1;
-        else if (dateA > dateB) return -1;
-        return 0;
-      });
-      cb(null, sortedPatients)
-    })
+    cb(null, sortedPatients)
   };
 
   Patient.linkSensor = function (patid, sensorid, date, altPatId, cb) {
-    let promPatient = Patient.findOne({"where":{"patId":patid}});
+    let promPatient = Patient.app.models.Patient.findOne({"where":{"patId":patid}});
     let promSenosr = Patient.app.models.SensorInstance.findOne({"where":{"sensorIdentifier":sensorid}})
     Promise.all([promPatient, promSenosr]).then((result) => {
       if (result[0] == null) {
@@ -67,15 +45,18 @@ module.exports = function(Patient) {
       }
       let patient = result[0];
       let sensor = result[1];
+      let save = true;
 
       if (sensor.linkedPatId == patient.patId) {
         cb({"error":"Sensor already linked to this patient"});
+        save = false;
       } else if (sensor.linkedPatId != null) {
         cb({"error":"Sensor already linked to another patient"})
+        save = false;
       }
 
       let lSensor = new Patient.app.models.LinkedSensor();
-      lSensor.sensor = sensor.sensorIdentifier;
+      lSensor.sensorIdentifier = sensor.sensorIdentifier;
       lSensor.altPatIdentifier = altPatId;
       if (date == null) {
         lSensor.from = new Date()
@@ -84,178 +65,170 @@ module.exports = function(Patient) {
       }
       lSensor.readings = sensor.readings;
       lSensor.isConnected = true;
-      patient.linkedSensors.push(lSensor);
       sensor.linkedPatId = patient.patId;
 
-      return Promise.all([patient.save(), sensor.save()]);
+      if(save) {
+        return Promise.all([patient.linkedSensors.create(lSensor), sensor.save()]);
+      }
 
     }).then((result) =>{
       cb(null, {"Success":"Sensor linked to patient"})
-    }).catch(error => cb(err))
+    }).catch(err => cb(err))
   };
 
   Patient.unlinkSensor = function(patid, sensorid, date, cb){
-    let promPatient = Patient.findOne({"where":{"patId":patid}});
+    let promLinkedSensor = Patient.app.models.LinkedSensor.findOne({"where":{"and": [{"patId":patid}, {"sensorIdentifier":sensorid}, {"isConnected":true}]}});
     let promSenosr = Patient.app.models.SensorInstance.findOne({"where":{"sensorIdentifier":sensorid}})
-    Promise.all([promPatient, promSenosr]).then((result) => {
-      if (result[0] == null) {
-        cb({"error":"Patient not found"})
-      } else if (result[1] == null) {
-        cb({"error":"Sensor not found"})
+    Promise.all([promLinkedSensor, promSenosr]).then((result) => {
+      let save = true;
+      if (result[1] == null) {
+        cb({"error":"No sensor found with this identifier"})
+        save = false;
+      } else if (result[0] == null) {
+        cb({"error":"Sensor is not connected to this patient"})
+        save = false;
       }
-      let patient = result[0];
+      let linkedSensor = result[0];
       let sensor = result[1];
 
-      if (sensor.linkedPatId == null) {
-        cb({"error":"Sensor has no linked patient"});
-      } else if (sensor.linkedPatId != patient.patId) {
-        cb({"error":"Sensor is linked to another patient"})
+      sensor.linkedPatId = null;
+      linkedSensor.isConnected = false;
+      if (date == null){
+        linkedSensor.to = new Date();
+      } else {
+        linkedSensor.to = date;
       }
 
-      for (let i = 0; i < patient.linkedSensors.length; i++) {
-        let lSensor = patient.linkedSensors[i];
-        if(lSensor.sensor==sensorid && lSensor.isConnected==true) {
-          lSensor.isConnected=false;
-          if (date == null) {
-            lSensor.to = new Date();
-          } else {
-            lSensor.to = date;
-          }
-          sensor.linkedPatId=null;
-          break;
-        }
+      if (save) {
+        return Promise.all([linkedSensor.save(), sensor.save()]);
       }
-      return Promise.all([patient.save(), sensor.save()]);
 
     }).then((result) =>{
       cb(null, {"Success":"Sensor unlinked from patient"});
     }).catch(err => cb(err))
   }
 
-  Patient.getMeasurements = function(id, from, to, readings, cb) {
-    if(to == null) {
+  Patient.getMeasurements = async (id, from, to, code, cb) => {
+    if (to == null) {
       to = new Date();
       to.setDate(to.getDate() + 1);
+    }
+    let patient;
+    try {
+      patient = await Patient.findOne({"where":{"patId":id}})
+    } catch (error) {
+      console.log(error);
+    }
+    if(patient==null) {
+      cb({"error":"Patient not found"});
     };
-    Patient.findOne({"where":{"patId":id}}).then((patient) => {
-      if(patient==null) {
-        cb({"error":"Patient not found"});
-      };
-      let lSensors = [];
-      patient.linkedSensors.forEach(ls => {
-        if (ls.isConnected == true && ls.from.setHours(0, 0, 0, 0) <= from.setHours(0,0,0,0)) {
-          lSensors.push(ls);
-        } else if(isInDateInterval(ls.from, from, to) || isInDateInterval(ls.to, from, to)) {
-          lSensors.push(ls);
-        }
-      });
-      let measurements = [];
+    let allLSensors;
+    try {
+      allLSensors = await patient.linkedSensors.find();
+    } catch (error) {
+      console.log(error);
+    }
+    let lSensors = [];
+    allLSensors.forEach(ls => {
+      if (ls.isConnected == true && ls.from.setHours(0, 0, 0, 0) <= from.setHours(0,0,0,0)) {
+        lSensors.push(ls);
+      } else if(isInDateInterval(ls.from, from, to) || isInDateInterval(ls.to, from, to)) {
+        lSensors.push(ls);
+      }
+    });
+    let allMeasurements = [];
 
-      lSensors.forEach(ls => {
-        let result = ls.savedData.filter(data => isInTimeInterval(data.timestamp, from, to));
-        measurements = measurements.concat(result);
-      });
+    for(const ls of lSensors) {
+      let measurements;
+      try {
+        measurements = await ls.measuredData.find();
+      } catch (error) {
+        console.log(error);
+      }
+      let result = measurements.filter(data => isInTimeInterval(data.timestamp, from, to));
+      allMeasurements = allMeasurements.concat(result);
+    };
 
-      if (readings) {
-        measurements = measurements.filter(data => filterReadings(data.reading, readings));
-      };
+    if (code) {
+      allMeasurements = allMeasurements.filter(data => filterReadings(data.reading, code));
+    };
 
-      let measurementsSorted = measurements.sort(function(a, b) {
-        let dateA = new Date(a.timestamp)
-        let dateB = new Date(b.timestamp);
-        if (dateA > dateB) return 1;
-        else if (dateA < dateB) return -1;
-        return 0;
-      });
+    let measurementsSorted = allMeasurements.sort(function(a, b) {
+      let dateA = new Date(a.timestamp)
+      let dateB = new Date(b.timestamp);
+      if (dateA > dateB) return 1;
+      else if (dateA < dateB) return -1;
+      return 0;
+    });
 
-      cb(null, measurementsSorted)
-
-    }).catch(err => cb(err))
+    cb(null, measurementsSorted)
   }
 
-  Patient.measurements = function(id, values, sensorIdentifier, reading , cb) {
-    Patient.findOne({"where":{"patId":id}}).then(patient => {
-      if(!patient){
-
-      }
-      let lSensor = patient.linkedSensors.find(function(ls) {
-        return ls.sensor == sensorIdentifier;
-      })
-      if(lSensor == null) {
+  Patient.measurements = function(id, measurements, sensorIdentifier, cb) {
+    let promLinkedSensor = Patient.app.models.LinkedSensor.findOne({"where":{"and": [{"patId":id}, {"sensorIdentifier":sensorIdentifier}, {"isConnected":true}]}});
+    let promPatient = Patient.findOne({"where":{"patId":id}});
+    Promise.all([promLinkedSensor, promPatient]).then(results => {
+      let save = true;
+      let lSensor = results[0];
+      let patient = results[1];
+      if (!lSensor) {
         cb({"error":"Sensor is not linked with this patient"});
-      } else if (!reading.sensorType || !reading.measurementCode || !reading.measurementCode[0].code){
-        cb({"error":"Reading object is invalid"});
+        save = false;
       }
 
-      let faultyObjs = [];
-      let measurements = [];
       let lastEntryDate = new Date("1900-01-01");
-      if(patient.lastMeasurementEntry) {
+      if (patient.lastMeasurementEntry) {
         lastEntryDate = new Date(patient.lastMeasurementEntry.toISOString())
       };
 
-      values.forEach(valueObj => {
-        valueObj.timestamp = new Date(valueObj.timestamp);
-        if (!valueObj.value || !valueObj.timestamp){
-          faultyObjs.push({"Error:":"Value Object is not complete with timestamp, value","Object":valueObj})
-        } else if (lSensor.from >= valueObj.timestamp){
-          faultyObjs.push({"Error:":"Sensor is not connected to patient at the given timestamp","Object":valueObj})
-        } else if (lSensor.savedData.some((e) => { return (e.timestamp.toISOString() == valueObj.timestamp.toISOString() && e.reading.measurementCode[0].code == reading.measurementCode[0].code)})) {
-          console.log(lSensor.savedData.some((e) => e.timestamp.toISOString() == valueObj.timestamp.toISOString()))
-          faultyObjs.push({"Error:":"Value with this timestamp already exists","Object":valueObj})
-        }
+      measurements.forEach(measurement => {
+        measurement.timestamp = new Date(measurement.timestamp);
 
-        let measurement =  new Patient.app.models.MeasuredData();
-        measurement.timestamp=valueObj.timestamp;
-        measurement.sensor=sensorIdentifier;
-        measurement.value=valueObj.value;
-        measurement.reading=reading;
-
-        if(valueObj.timestamp > lastEntryDate) {
-          patient.lastMeasurementEntry = valueObj.timestamp;
+        if (measurement.timestamp > lastEntryDate) {
+          patient.lastMeasurementEntry = measurement.timestamp;
         };
-        measurements.push(measurement);
-      })
+      });
 
-      if(faultyObjs.length!=0){
-        cb({"error":"Some provided value objects were faulty","faulty Objects:":faultyObjs})
-      } else {
-        lSensor.savedData = lSensor.savedData.concat(measurements);
-        return patient.save();
+      let dataToSave = [];
+      measurements.forEach(measurement => {
+        dataToSave.push(lSensor.measuredData.create(measurement));
+      });
+      dataToSave.push(patient.save())
+      console.log(measurements[0]);
+      if (save) {
+        return Promise.all(dataToSave);
       }
 
-    }).then(patient => cb(null, {"Success":"Measurement saved"})).catch(err => cb(err))
+    }).then(results => cb(null, {"Success":"Measurement saved"})).catch(err => cb(err))
   }
 
 };
 
 let isInDateInterval = function(date, from, to) {
+  date = new Date(date);
+  from = new Date(from);
+  to = new Date(to);
   date.setHours(0,0,0,0);
   from.setHours(0,0,0,0);
   to.setHours(0,0,0,0);
   let isInInterval = false;
-  if(date >= from && date <= to) {
+  if(from <= date && date <= to) {
     isInInterval = true;
   }
   return isInInterval;
 }
 
 let isInTimeInterval = function(date, from, to) {
+  date = new Date(date);
+  from = new Date(from);
+  to = new Date(to);
   let isInInterval = false;
-  if(date >= from && date <= to) {
+  if(from <= date && date <= to) {
     isInInterval = true;
   }
   return isInInterval;
 }
 
-let filterReadings = function(reading, readings) {
-  let isIncluded = false;
-  readings.forEach(r1 => {
-    r1.measurementCode.forEach(r1Coding => {
-      if(r1Coding.code == reading.measurementCode[0].code) {
-        isIncluded = true;
-      }
-    });
-  });
-  return isIncluded;
+let filterReadings = function(reading, code) {
+  return reading.measurementCode[0].code == code;
 };
