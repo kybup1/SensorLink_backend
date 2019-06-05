@@ -112,12 +112,22 @@ module.exports = async (Patient) => {
     if (to == null) {
       to = new Date();
       to.setDate(to.getDate() + 1);
-    };
-    let patient = await Patient.findOne({"where":{"patId":id}})
+    }
+    let patient;
+    try {
+      patient = await Patient.findOne({"where":{"patId":id}})
+    } catch (error) {
+      console.log(error);
+    }
     if(patient==null) {
       cb({"error":"Patient not found"});
     };
-    let allLSensors = await patient.linkedSensors.find();
+    let allLSensors;
+    try {
+      allLSensors = await patient.linkedSensors.find();
+    } catch (error) {
+      console.log(error);
+    }
     let lSensors = [];
     allLSensors.forEach(ls => {
       if (ls.isConnected == true && ls.from.setHours(0, 0, 0, 0) <= from.setHours(0,0,0,0)) {
@@ -128,9 +138,13 @@ module.exports = async (Patient) => {
     });
     let allMeasurements = [];
 
-
     for(const ls of lSensors) {
-      let measurements = await ls.measuredData.find();
+      let measurements;
+      try {
+        measurements = await ls.measuredData.find();
+      } catch (error) {
+        console.log(error);
+      }
       let result = measurements.filter(data => isInTimeInterval(data.timestamp, from, to));
       allMeasurements = allMeasurements.concat(result);
     };
@@ -191,19 +205,25 @@ module.exports = async (Patient) => {
 };
 
 let isInDateInterval = function(date, from, to) {
+  date = new Date(date);
+  from = new Date(from);
+  to = new Date(to);
   date.setHours(0,0,0,0);
   from.setHours(0,0,0,0);
   to.setHours(0,0,0,0);
   let isInInterval = false;
-  if(date >= from && date <= to) {
+  if(from <= date && date <= to) {
     isInInterval = true;
   }
   return isInInterval;
 }
 
 let isInTimeInterval = function(date, from, to) {
+  date = new Date(date);
+  from = new Date(from);
+  to = new Date(to);
   let isInInterval = false;
-  if(date >= from && date <= to) {
+  if(from <= date && date <= to) {
     isInInterval = true;
   }
   return isInInterval;
