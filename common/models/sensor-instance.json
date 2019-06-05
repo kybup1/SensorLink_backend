@@ -42,5 +42,24 @@
       "permission": "DENY"
     }
   ],
-  "methods": {}
+  "methods": {
+    "getReadings": {
+      "accepts": [],
+      "returns": [
+        {
+          "type": [
+            "Readings"
+          ],
+          "root":"true"
+        }
+      ],
+      "description": "Returns possible reading objects",
+      "http": [
+        {
+          "path": "/possibleReadings",
+          "verb": "get"
+        }
+      ]
+    }
+  }
 }
