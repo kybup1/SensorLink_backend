@@ -50,7 +50,7 @@
           "type": [
             "Readings"
           ],
-          "root":"true"
+          "root": "true"
         }
       ],
       "description": "Returns possible reading objects",

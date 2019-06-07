@@ -40,8 +40,8 @@
     "linkedSensors": {
       "type": "hasMany",
       "model": "LinkedSensor",
-      "property": "linkedSensors",
-      "foreignKey":"patId"
+      "foreignKey": "patId",
+      "property": "linkedSensors"
     }
   },
   "acls": [
@@ -217,6 +217,41 @@
         {
           "path": "/:id/measurements",
           "verb": "post"
+        }
+      ]
+    },
+    "getEventsAt": {
+      "accepts": [
+        {
+          "arg": "id",
+          "type": "string"
+        },
+        {
+          "arg": "from",
+          "type": "date",
+          "required": true,
+          "description": ""
+        },
+        {
+          "arg": "to",
+          "type": "date",
+          "required": false,
+          "description": ""
+        }
+      ],
+      "returns": [
+        {
+          "type": [
+            "Event"
+          ],
+          "root": "true"
+        }
+      ],
+      "description": "This method returns all events in a given time span",
+      "http": [
+        {
+          "path": "/:id/eventsAt",
+          "verb": "get"
         }
       ]
     }
