@@ -7,6 +7,8 @@ module.exports = function(Sensorinstance) {
   Sensorinstance.beforeRemote('create', function(sensor, u, next) {
    // Creates the sensoridentifier by combining sensortype with sensorid with a questionmark between both
     sensor.req.body.sensorIdentifier = sensor.req.body.sensorType + '?' + sensor.req.body.sensorId;
+    // Creates the linkedPatId attribute and sets it to null since no patient is connected when the sensor is created
+    sensor.req.body.linkedPatId = null;
     // Checks if a sensor has reading objects and adds the attribute sensortype into those reading objects
     if (sensor.req.body.readings) {
       for (let i = 0; i < sensor.req.body.readings.length; i++) {
@@ -19,7 +21,7 @@ module.exports = function(Sensorinstance) {
   // In a productive environment those readings should be provided by a ontologyserver
   Sensorinstance.getReadings = function(cb) {
     cb(null, readings);
-  }
+  };
 };
 // Hardcoded reading objects
 // Only for this prototypical implementation. Should be provided by an ontologyserver in a productive environment.
@@ -78,4 +80,4 @@ const readings = [
     ],
     'Unit': 'ms'
   }
-]
+];
