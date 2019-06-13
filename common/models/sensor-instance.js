@@ -31,7 +31,7 @@ const readings = [
     'measurementCode': [
       {
         'system': 'loinc',
-        'code': '8867-3',
+        'code': '8867-4',
         'display': 'Heartrate'
       },
       {
